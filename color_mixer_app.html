@@ -81,36 +81,60 @@
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('root-drug-a')" class="bg-blue-100 text-blue-600 p-2 rounded-md hover:bg-blue-200 transition"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="root-drug-a" class="flex-1 text-sm p-2 border rounded-md font-bold" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="root-ratio-a" class="w-full p-2 border rounded-md font-bold" value="1" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="root-ratio-a" class="w-full p-2 border rounded-md font-bold text-center px-1" value="1" oninput="clearOtherAndCalc(this, 'root-percent-a')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="root-percent-a" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'root-ratio-a')">
+                        </div>
                     </div>
                 </div>
                 <!-- 1剤B -->
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('root-drug-b')" class="bg-blue-100 text-blue-600 p-2 rounded-md hover:bg-blue-200 transition"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="root-drug-b" class="flex-1 text-sm p-2 border rounded-md" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="root-ratio-b" class="w-full p-2 border rounded-md" value="0" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="root-ratio-b" class="w-full p-2 border rounded-md text-center px-1" value="0" oninput="clearOtherAndCalc(this, 'root-percent-b')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="root-percent-b" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'root-ratio-b')">
+                        </div>
                     </div>
                 </div>
                 <!-- 1剤C -->
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('root-drug-c')" class="bg-blue-100 text-blue-600 p-2 rounded-md hover:bg-blue-200 transition"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="root-drug-c" class="flex-1 text-sm p-2 border rounded-md" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="root-ratio-c" class="w-full p-2 border rounded-md" value="0" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="root-ratio-c" class="w-full p-2 border rounded-md text-center px-1" value="0" oninput="clearOtherAndCalc(this, 'root-percent-c')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="root-percent-c" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'root-ratio-c')">
+                        </div>
                     </div>
                 </div>
                 <!-- 1剤D -->
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('root-drug-d')" class="bg-blue-100 text-blue-600 p-2 rounded-md hover:bg-blue-200 transition"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="root-drug-d" class="flex-1 text-sm p-2 border rounded-md" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="root-ratio-d" class="w-full p-2 border rounded-md" value="0" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="root-ratio-d" class="w-full p-2 border rounded-md text-center px-1" value="0" oninput="clearOtherAndCalc(this, 'root-percent-d')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="root-percent-d" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'root-ratio-d')">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -169,33 +193,57 @@
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('mid-drug-a')" class="bg-blue-100 text-blue-600 p-2 rounded-md"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="mid-drug-a" class="flex-1 text-sm p-2 border rounded-md font-bold" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="mid-ratio-a" class="w-full p-2 border rounded-md font-bold" value="1" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="mid-ratio-a" class="w-full p-2 border rounded-md font-bold text-center px-1" value="1" oninput="clearOtherAndCalc(this, 'mid-percent-a')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="mid-percent-a" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'mid-ratio-a')">
+                        </div>
                     </div>
                 </div>
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('mid-drug-b')" class="bg-blue-100 text-blue-600 p-2 rounded-md"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="mid-drug-b" class="flex-1 text-sm p-2 border rounded-md" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="mid-ratio-b" class="w-full p-2 border rounded-md" value="0" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="mid-ratio-b" class="w-full p-2 border rounded-md text-center px-1" value="0" oninput="clearOtherAndCalc(this, 'mid-percent-b')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="mid-percent-b" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'mid-ratio-b')">
+                        </div>
                     </div>
                 </div>
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('mid-drug-c')" class="bg-blue-100 text-blue-600 p-2 rounded-md"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="mid-drug-c" class="flex-1 text-sm p-2 border rounded-md" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="mid-ratio-c" class="w-full p-2 border rounded-md" value="0" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="mid-ratio-c" class="w-full p-2 border rounded-md text-center px-1" value="0" oninput="clearOtherAndCalc(this, 'mid-percent-c')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="mid-percent-c" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'mid-ratio-c')">
+                        </div>
                     </div>
                 </div>
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('mid-drug-d')" class="bg-blue-100 text-blue-600 p-2 rounded-md"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="mid-drug-d" class="flex-1 text-sm p-2 border rounded-md" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="mid-ratio-d" class="w-full p-2 border rounded-md" value="0" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="mid-ratio-d" class="w-full p-2 border rounded-md text-center px-1" value="0" oninput="clearOtherAndCalc(this, 'mid-percent-d')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="mid-percent-d" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'mid-ratio-d')">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -254,33 +302,57 @@
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('tip-drug-a')" class="bg-blue-100 text-blue-600 p-2 rounded-md"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="tip-drug-a" class="flex-1 text-sm p-2 border rounded-md font-bold" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="tip-ratio-a" class="w-full p-2 border rounded-md font-bold" value="1" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="tip-ratio-a" class="w-full p-2 border rounded-md font-bold text-center px-1" value="1" oninput="clearOtherAndCalc(this, 'tip-percent-a')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="tip-percent-a" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'tip-ratio-a')">
+                        </div>
                     </div>
                 </div>
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('tip-drug-b')" class="bg-blue-100 text-blue-600 p-2 rounded-md"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="tip-drug-b" class="flex-1 text-sm p-2 border rounded-md" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="tip-ratio-b" class="w-full p-2 border rounded-md" value="0" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="tip-ratio-b" class="w-full p-2 border rounded-md text-center px-1" value="0" oninput="clearOtherAndCalc(this, 'tip-percent-b')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="tip-percent-b" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'tip-ratio-b')">
+                        </div>
                     </div>
                 </div>
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('tip-drug-c')" class="bg-blue-100 text-blue-600 p-2 rounded-md"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="tip-drug-c" class="flex-1 text-sm p-2 border rounded-md" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="tip-ratio-c" class="w-full p-2 border rounded-md" value="0" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="tip-ratio-c" class="w-full p-2 border rounded-md text-center px-1" value="0" oninput="clearOtherAndCalc(this, 'tip-percent-c')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="tip-percent-c" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'tip-ratio-c')">
+                        </div>
                     </div>
                 </div>
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('tip-drug-d')" class="bg-blue-100 text-blue-600 p-2 rounded-md"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="tip-drug-d" class="flex-1 text-sm p-2 border rounded-md" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
-                    <div class="w-16">
-                        <label class="block text-[10px] text-gray-400 text-center">比率</label>
-                        <input type="number" id="tip-ratio-d" class="w-full p-2 border rounded-md" value="0" oninput="calculate()">
+                    <div class="flex gap-1 w-28">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">比率</label>
+                            <input type="number" id="tip-ratio-d" class="w-full p-2 border rounded-md text-center px-1" value="0" oninput="clearOtherAndCalc(this, 'tip-percent-d')">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] text-gray-400 text-center">％</label>
+                            <input type="number" id="tip-percent-d" class="w-full p-2 border rounded-md text-center px-1" placeholder="10" oninput="clearOtherAndCalc(this, 'tip-ratio-d')">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -466,6 +538,15 @@
             }
         }
 
+        // 入力切り替え時の処理（比率とパーセントの排他制御）
+        function clearOtherAndCalc(currentInput, otherId) {
+            // 値が入力されたら、もう片方の入力欄を空にする
+            if (currentInput.value !== "") {
+                document.getElementById(otherId).value = "";
+            }
+            calculate();
+        }
+
         // グラム計算処理
         function calculate() {
             calcSection('root');
@@ -497,40 +578,67 @@
 
         function calcSection(prefix) {
             const total = parseFloat(document.getElementById(`${prefix}-total`).value) || 0;
-            const ratioA = parseFloat(document.getElementById(`${prefix}-ratio-a`).value) || 0;
-            const ratioB = parseFloat(document.getElementById(`${prefix}-ratio-b`).value) || 0;
-            const ratioC = parseFloat(document.getElementById(`${prefix}-ratio-c`).value) || 0;
-            const ratioD = parseFloat(document.getElementById(`${prefix}-ratio-d`).value) || 0;
             
-            const drugA = document.getElementById(`${prefix}-drug-a`).value || '薬剤A';
-            const drugB = document.getElementById(`${prefix}-drug-b`).value || '薬剤B';
-            const drugC = document.getElementById(`${prefix}-drug-c`).value || '薬剤C';
-            const drugD = document.getElementById(`${prefix}-drug-d`).value || '薬剤D';
+            // 値の取得ヘルパー関数
+            const getVal = (suffix, type) => parseFloat(document.getElementById(`${prefix}-${type}-${suffix}`).value);
+            
+            const ratios = {
+                a: getVal('a', 'ratio') || 0,
+                b: getVal('b', 'ratio') || 0,
+                c: getVal('c', 'ratio') || 0,
+                d: getVal('d', 'ratio') || 0
+            };
+            
+            const percents = {
+                a: getVal('a', 'percent') || 0,
+                b: getVal('b', 'percent') || 0,
+                c: getVal('c', 'percent') || 0,
+                d: getVal('d', 'percent') || 0
+            };
+
+            const drugs = {
+                a: document.getElementById(`${prefix}-drug-a`).value || '薬剤A',
+                b: document.getElementById(`${prefix}-drug-b`).value || '薬剤B',
+                c: document.getElementById(`${prefix}-drug-c`).value || '薬剤C',
+                d: document.getElementById(`${prefix}-drug-d`).value || '薬剤D'
+            };
             
             const oxiType = document.getElementById(`${prefix}-oxi-type`).value;
             const oxiRatio = parseFloat(document.getElementById(`${prefix}-oxi-ratio`).value) || 1;
 
-            const totalRatio = ratioA + ratioB + ratioC + ratioD;
+            let grams = { a: 0, b: 0, c: 0, d: 0 };
+            let percentUsedTotalGrams = 0;
+
+            // 1. パーセント指定された薬剤のグラム数を確定させる
+            ['a', 'b', 'c', 'd'].forEach(key => {
+                const percentStr = document.getElementById(`${prefix}-percent-${key}`).value;
+                if (percentStr !== "" && !isNaN(parseFloat(percentStr))) {
+                    grams[key] = total * (percents[key] / 100);
+                    percentUsedTotalGrams += grams[key];
+                    // パーセント指定された場合は比率計算から除外する
+                    ratios[key] = 0; 
+                }
+            });
+
+            // 2. 残りのグラム数を計算（総量から、パーセント指定分を引いた量）
+            const remainingTotal = Math.max(0, total - percentUsedTotalGrams);
             
-            let gA = 0, gB = 0, gC = 0, gD = 0;
-            if (totalRatio > 0) {
-                gA = (ratioA / totalRatio) * total;
-                gB = (ratioB / totalRatio) * total;
-                gC = (ratioC / totalRatio) * total;
-                gD = (ratioD / totalRatio) * total;
-            }
+            // 3. 残りのグラム数を「比率指定」の薬剤で分配する
+            const totalRatio = ratios.a + ratios.b + ratios.c + ratios.d;
+            
+            ['a', 'b', 'c', 'd'].forEach(key => {
+                if (ratios[key] > 0 && totalRatio > 0) {
+                    grams[key] = remainingTotal * (ratios[key] / totalRatio);
+                }
+            });
 
             const gOxi = total * oxiRatio;
 
-            document.getElementById(`${prefix}-name-a`).textContent = drugA;
-            document.getElementById(`${prefix}-name-b`).textContent = drugB;
-            document.getElementById(`${prefix}-name-c`).textContent = drugC;
-            document.getElementById(`${prefix}-name-d`).textContent = drugD;
-            
-            document.getElementById(`${prefix}-g-a`).textContent = gA.toFixed(1) + 'g';
-            document.getElementById(`${prefix}-g-b`).textContent = gB.toFixed(1) + 'g';
-            document.getElementById(`${prefix}-g-c`).textContent = gC.toFixed(1) + 'g';
-            document.getElementById(`${prefix}-g-d`).textContent = gD.toFixed(1) + 'g';
+            // UI更新
+            ['a', 'b', 'c', 'd'].forEach(key => {
+                document.getElementById(`${prefix}-name-${key}`).textContent = drugs[key];
+                document.getElementById(`${prefix}-g-${key}`).textContent = grams[key].toFixed(1) + 'g';
+            });
             
             document.getElementById(`${prefix}-oxi-label`).textContent = `2剤 (${oxiType})`;
             document.getElementById(`${prefix}-g-oxi`).textContent = gOxi.toFixed(1) + 'g';
