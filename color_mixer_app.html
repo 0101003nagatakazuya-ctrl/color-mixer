@@ -50,7 +50,7 @@
             <h2 class="text-sm font-bold mb-2 text-gray-700 flex items-center gap-2">
                 <i data-lucide="edit-3" class="w-4 h-4"></i> その他指示・メモ
             </h2>
-            <textarea id="memo-input" class="w-full p-2 border rounded-md text-sm text-gray-700 h-16 resize-none" placeholder="例: 毛先は塗布後5分で流し"></textarea>
+            <textarea id="memo-input" class="w-full p-2 border rounded-md text-sm text-gray-700 h-16 resize-none" placeholder="例: 毛先は塗布後5分で流し" oninput="updateTextResult()"></textarea>
         </div>
 
         <!-- 根元・ワンタッチセクション -->
@@ -250,7 +250,7 @@
                 </div>
             </div>
 
-            <div id="tip-inputs" class="space-y-2 opacity-50 pointer-events-none transition-opacity">
+            <div id="tip-inputs" class="space-y-2 opacity-50 transition-opacity">
                 <div class="flex gap-2 items-center">
                     <button onclick="startScanner('tip-drug-a')" class="bg-blue-100 text-blue-600 p-2 rounded-md"><i data-lucide="scan-line" class="w-5 h-5"></i></button>
                     <input type="text" id="tip-drug-a" class="flex-1 text-sm p-2 border rounded-md font-bold" placeholder="手入力またはスキャン" onchange="checkDatabaseAndCalculate(this)">
@@ -316,6 +316,14 @@
             <button onclick="copyToClipboard()" class="w-full bg-gray-800 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 hover:bg-gray-700 active:scale-95 transition">
                 <i data-lucide="copy"></i> カルテ用テキストをコピー
             </button>
+        </div>
+
+        <!-- テキスト出力結果ウィンドウ -->
+        <div class="glass-panel p-4 mb-8">
+            <h2 class="text-sm font-bold mb-2 text-gray-700 flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i> 出力テキスト確認
+            </h2>
+            <pre id="text-result-content" class="w-full p-3 bg-white border border-gray-200 rounded-md text-sm text-gray-700 whitespace-pre-wrap font-sans min-h-[100px]"></pre>
         </div>
 
     </div>
@@ -466,9 +474,9 @@
             const midInputs = document.getElementById('mid-inputs');
             
             if (midTotal > 0) {
-                midInputs.classList.remove('opacity-50', 'pointer-events-none');
+                midInputs.classList.remove('opacity-50');
             } else {
-                midInputs.classList.add('opacity-50', 'pointer-events-none');
+                midInputs.classList.add('opacity-50');
             }
             calcSection('mid');
 
@@ -477,11 +485,14 @@
             const tipInputs = document.getElementById('tip-inputs');
             
             if (tipTotal > 0) {
-                tipInputs.classList.remove('opacity-50', 'pointer-events-none');
+                tipInputs.classList.remove('opacity-50');
             } else {
-                tipInputs.classList.add('opacity-50', 'pointer-events-none');
+                tipInputs.classList.add('opacity-50');
             }
             calcSection('tip');
+            
+            // 計算の最後にテキスト出力結果を更新
+            updateTextResult();
         }
 
         function calcSection(prefix) {
@@ -525,8 +536,13 @@
             document.getElementById(`${prefix}-g-oxi`).textContent = gOxi.toFixed(1) + 'g';
         }
 
-        // クリップボードにコピー
-        function copyToClipboard() {
+        // テキスト結果の更新処理
+        function updateTextResult() {
+            document.getElementById('text-result-content').textContent = generateKarteText();
+        }
+
+        // カルテ用テキストの生成
+        function generateKarteText() {
             let text = "";
 
             // メモ欄の取得
@@ -546,6 +562,13 @@
             if (tipTotal > 0) {
                 text += "\n" + buildSectionText('tip', '【毛先】');
             }
+
+            return text;
+        }
+
+        // クリップボードにコピー
+        function copyToClipboard() {
+            let text = generateKarteText();
 
             const el = document.createElement('textarea');
             el.value = text;
