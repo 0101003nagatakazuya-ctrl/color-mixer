@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/3b82f6/ffffff?text=Mix">
+    <title>サロン調合計算ツール</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f3f4f6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* 入力フォームのデフォルトスタイルをリセット */
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+        }
+        /* スピンボタンを非表示にする */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .result-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+        }
+        .copied-toast {
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .copied-toast.show {
+            opacity: 1;
+        }
+        #camera-modal {
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        #reader video {
+            border-radius: 0.5rem;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="text-gray-800 pb-24">
+
+    <!-- ヘッダー -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-flask text-blue-500 mr-2"></i>ColorMixer</h1>
+            <button onclick="clearAll()" class="text-sm text-gray-500 hover:text-red-500"><i class="fa-solid fa-rotate-right mr-1"></i>リセット</button>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto p-4 space-y-6">
+        
+        <!-- セクションテンプレートを生成するコンテナ -->
+        <div id="app-container"></div>
+
+        <!-- カルテコピペ用エリア -->
+        <div class="bg-gray-800 rounded-xl shadow-lg p-4 mt-8 text-white relative">
+            <div class="flex justify-between items-center border-b border-gray-600 pb-2 mb-3">
+                <h2 class="font-bold"><i class="fa-regular fa-clipboard mr-2"></i>カルテ用テキスト</h2>
+                <button onclick="copyToClipboard()" class="bg-blue-500 hover:bg-blue-600 text-white text-sm py-1 px-3 rounded-lg font-medium transition-colors">
+                    <i class="fa-regular fa-copy mr-1"></i>コピー
+                </button>
+            </div>
+            <pre id="clipboard-text" class="text-xs text-gray-300 whitespace-pre-wrap font-mono leading-relaxed min-h-[100px]">計算結果がここに表示されます...</pre>
+            
+            <!-- コピートースト通知 -->
+            <div id="toast" class="copied-toast absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-80 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-xl">
+                コピーしました！
+            </div>
+        </div>
+    </main>
+
+    <div id="camera-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex flex-col justify-center items-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-gray-800"><i class="fa-solid fa-camera text-blue-500 mr-2"></i>バーコードスキャン</h3>
+                <button onclick="closeCamera()" class="text-gray-500 hover:text-red-500 text-3xl font-bold leading-none px-2">&times;</button>
+            </div>
+            <div class="p-4 relative bg-black flex-1 flex flex-col justify-center min-h-[350px]">
+                <div id="reader" class="w-full"></div>
+                <div id="camera-loading" class="absolute inset-0 flex flex-col items-center justify-center text-white bg-black bg-opacity-50">
+                    <i class="fa-solid fa-spinner fa-spin text-4xl mb-3"></i>
+                    <span class="text-sm">カメラを起動中...</span>
+                </div>
+            </div>
+            <div class="p-4 bg-gray-50 text-xs text-gray-500 text-center">
+                ※初回のカメラ許可をお願いします。<br>枠内にバーコードを写してください。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // セクションの設定
+        const sections = [
+            { id: 'root', name: '根元 (リタッチ)', defaultTotal: 40, defaultOx: 'OX 6.0%', defaultOxRatio: 1.0 },
+            { id: 'mid', name: '中間', defaultTotal: 0, defaultOx: 'OX 4.5%', defaultOxRatio: 1.0 },
+            { id: 'ends', name: '毛先', defaultTotal: 0, defaultOx: 'OX 3.0%', defaultOxRatio: 1.0 }
+        ];
+
+        const oxOptions = ['OX 6.0%', 'OX 4.5%', 'OX 3.0%', 'OX 1.5%', 'AC 2.0%'];
+
+        // HTMLを動的に生成
+        function renderApp() {
+            const container = document.getElementById('app-container');
+            let html = '';
+
+            sections.forEach(sec => {
+                html += `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-5">
+                    <!-- セクションヘッダー -->
+                    <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+                        <h2 class="font-bold text-gray-800">${sec.name}</h2>
+                        <div class="flex items-center space-x-2">
+                            <label class="text-xs text-gray-500">総量(g)</label>
+                            <input type="number" id="${sec.id}-total" value="${sec.defaultTotal}" class="w-16 text-center font-bold text-blue-600" oninput="calculate()">
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <!-- 2剤設定 -->
+                        <div class="flex space-x-3 mb-4">
+                            <div class="flex-1">
+                                <label class="block text-xs text-gray-500 mb-1">2剤種類</label>
+                                <select id="${sec.id}-ox-type" onchange="calculate()">
+                                    ${oxOptions.map(ox => `<option value="${ox}" ${ox === sec.defaultOx ? 'selected' : ''}>${ox}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="w-24">
+                                <label class="block text-xs text-gray-500 mb-1">倍率</label>
+                                <div class="relative">
+                                    <input type="number" id="${sec.id}-ox-ratio" value="${sec.defaultOxRatio}" step="0.1" class="text-center pr-6" oninput="calculate()">
+                                    <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs">倍</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 1剤入力エリア -->
+                        <div class="space-y-3 mb-4">
+                            ${[1, 2, 3].map(i => `
+                            <div class="flex items-center space-x-2">
+                                <button onclick="openCamera('${sec.id}', ${i})" class="bg-gray-100 text-gray-500 hover:text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors" title="バーコードスキャン">
+                                    <i class="fa-solid fa-barcode"></i>
+                                </button>
+                                <div class="flex-1">
+                                    <input type="text" id="${sec.id}-name-${i}" placeholder="薬剤名 (手入力可)" oninput="calculate()">
+                                </div>
+                                <div class="w-16">
+                                    <input type="number" id="${sec.id}-ratio-${i}" placeholder="比率" value="${i===1 ? '1' : ''}" class="text-center" oninput="calculate()">
+                                </div>
+                            </div>
+                            `).join('')}
+                        </div>
+
+                        <!-- リアルタイム計算結果 (スクショ用エリア) -->
+                        <div class="result-box rounded-lg p-3">
+                            <div class="text-xs text-blue-600 font-bold mb-2 uppercase tracking-wider border-b border-blue-100 pb-1">Mix Result</div>
+                            <div class="space-y-1 text-sm font-bold text-gray-700" id="${sec.id}-results-agents">
+                                <!-- JSで結果を挿入 -->
+                            </div>
+                            <div class="mt-2 pt-2 border-t border-blue-100 flex justify-between items-center text-sm font-bold">
+                                <span>2剤 (<span id="${sec.id}-result-ox-name"></span>)</span>
+                                <span class="text-blue-600 text-lg"><span id="${sec.id}-result-ox-g">0.0</span> g</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            calculate(); // 初期計算
+        }
+
+        
+        // 仮想データベース（スキャンしたバーコード番号に紐づく薬剤名）
+        // ※実際はバックエンドのDBやスプレッドシート連携します。
+        const mockDatabase = {
+            '4900000000001': '8-Gray',
+            '4900000000002': '6-Blue',
+            '4900000000003': '10-Ash',
+            '4920202020202': 'Clear',
+            '4560123456789': 'Pink-Brown'
+        };
+
+        let html5QrCode = null;
+        let currentTarget = { secId: null, idx: null };
+
+        // カメラモーダルを開いてスキャンを開始
+        function openCamera(secId, idx) {
+            currentTarget = { secId, idx };
+            const modal = document.getElementById('camera-modal');
+            const loading = document.getElementById('camera-loading');
+            modal.classList.remove('hidden');
+            loading.classList.remove('hidden');
+
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+
+            // バーコード（1D）を読み取りやすくするための設定
+            const config = { fps: 10, qrbox: { width: 250, height: 100 } };
+            
+            html5QrCode.start(
+                { facingMode: "environment" }, // 外カメラ優先
+                config,
+                (decodedText, decodedResult) => {
+                    // スキャン成功時
+                    handleScanSuccess(decodedText);
+                },
+                (errorMessage) => {
+                    // 読み取り中（エラーは無視して継続）
+                }
+            ).then(() => {
+                loading.classList.add('hidden');
+            }).catch((err) => {
+                console.error("Camera start error:", err);
+                loading.classList.add('hidden');
+                alert("カメラの起動に失敗しました。ブラウザのカメラ権限を許可してください。");
+                closeCamera();
+            });
+        }
+
+        // カメラを停止してモーダルを閉じる
+        function closeCamera() {
+            const modal = document.getElementById('camera-modal');
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then(() => {
+                    modal.classList.add('hidden');
+                }).catch(err => {
+                    console.error("Camera stop error:", err);
+                    modal.classList.add('hidden');
+                });
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // スキャン成功時の反映処理
+        function handleScanSuccess(scannedCode) {
+            closeCamera();
+            
+            // データベースと照合。無ければバーコード番号をそのまま表示
+            const drugName = mockDatabase[scannedCode] || `Unknown (${scannedCode})`;
+            
+            const nameInput = document.getElementById(`${currentTarget.secId}-name-${currentTarget.idx}`);
+            const ratioInput = document.getElementById(`${currentTarget.secId}-ratio-${currentTarget.idx}`);
+            
+            nameInput.value = drugName;
+            if(!ratioInput.value) ratioInput.value = 1;
+            
+            // 成功時の視覚・触覚フィードバック
+            nameInput.classList.add('bg-green-100');
+            setTimeout(() => nameInput.classList.remove('bg-green-100'), 500);
+            if(navigator.vibrate) navigator.vibrate(200); // スマホが振動（対応機種のみ）
+            
+            calculate();
+        }
+
+        // 計算と描画のメインロジック
+        function calculate() {
+            let clipboardText = "";
+
+            sections.forEach(sec => {
+                const totalAmount = parseFloat(document.getElementById(`${sec.id}-total`).value) || 0;
+                const oxType = document.getElementById(`${sec.id}-ox-type`).value;
+                const oxRatio = parseFloat(document.getElementById(`${sec.id}-ox-ratio`).value) || 0;
+
+                let agents = [];
+                let totalRatio = 0;
+
+                // 1~3の薬剤データを収集
+                for (let i = 1; i <= 3; i++) {
+                    const name = document.getElementById(`${sec.id}-name-${i}`).value.trim() || `薬剤${String.fromCharCode(64+i)}`;
+                    // 比率が空欄の場合は0扱い
+                    const ratioStr = document.getElementById(`${sec.id}-ratio-${i}`).value;
+                    const ratio = ratioStr === '' ? 0 : parseFloat(ratioStr);
+
+                    if (ratio > 0) {
+                        agents.push({ name, ratio });
+                        totalRatio += ratio;
+                    }
+                }
+
+                const resultAgentsContainer = document.getElementById(`${sec.id}-results-agents`);
+                resultAgentsContainer.innerHTML = '';
+                
+                let sectionClipboardText = "";
+
+                if (totalAmount > 0) {
+                    // カルテテキストのヘッダー
+                    sectionClipboardText += `【${sec.name}】総量 ${totalAmount}g / ${oxType} (${oxRatio}倍)\n`;
+
+                    // 1剤の計算と描画
+                    agents.forEach(agent => {
+                        const grams = ((agent.ratio / totalRatio) * totalAmount).toFixed(1);
+                        
+                        // 画面描画
+                        resultAgentsContainer.innerHTML += `
+                            <div class="flex justify-between items-center">
+                                <span class="truncate pr-2">- ${agent.name} <span class="text-xs text-gray-400 font-normal ml-1">(比:${agent.ratio})</span></span>
+                                <span>${grams} g</span>
+                            </div>
+                        `;
+
+                        // コピペテキスト追加
+                        sectionClipboardText += `・${agent.name} ${grams}g\n`;
+                    });
+
+                    // 2剤の計算と描画
+                    const oxGrams = (totalAmount * oxRatio).toFixed(1);
+                    document.getElementById(`${sec.id}-result-ox-name`).innerText = oxType;
+                    document.getElementById(`${sec.id}-result-ox-g`).innerText = oxGrams;
+
+                    // コピペテキストのフッター追加
+                    clipboardText += sectionClipboardText + `------------------\n`;
+                } else {
+                    // 総量0の時の表示
+                    resultAgentsContainer.innerHTML = '<div class="text-gray-400 font-normal">総量が0gのため計算されません</div>';
+                    document.getElementById(`${sec.id}-result-ox-name`).innerText = oxType;
+                    document.getElementById(`${sec.id}-result-ox-g`).innerText = "0.0";
+                }
+            });
+
+            // クリップボード用テキストエリアの更新
+            const clipArea = document.getElementById('clipboard-text');
+            if(clipboardText === "") {
+                clipArea.innerText = "グラム数を入力すると結果が表示されます。";
+            } else {
+                clipArea.innerText = clipboardText.trim();
+            }
+        }
+
+        // クリップボードへコピー
+        function copyToClipboard() {
+            const textToCopy = document.getElementById('clipboard-text').innerText;
+            if(textToCopy === "グラム数を入力すると結果が表示されます。") return;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                alert('コピーに失敗しました。');
+                console.error('Error in copying text: ', err);
+            });
+        }
+
+        // 全てリセット
+        function clearAll() {
+            if(confirm('すべての入力をリセットしますか？')) {
+                renderApp();
+            }
+        }
+
+        // 初期化
+        renderApp();
+    </script>
+</body>
+</html>
