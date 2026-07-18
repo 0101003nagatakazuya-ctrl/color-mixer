@@ -406,6 +406,9 @@
         <span id="toast-msg">コピーしました</span>
     </div>
 
+    <!-- ★追加：プルダウン選択肢用のデータリスト -->
+    <datalist id="drug-list"></datalist>
+
     <script>
         lucide.createIcons();
 
@@ -447,6 +450,17 @@
                         }
                     }
                 }
+                
+                // ★追加：DBから読み込んだ薬剤名をプルダウン(datalist)に追加
+                const datalist = document.getElementById('drug-list');
+                datalist.innerHTML = '';
+                // 薬剤名の重複を避けてリスト化する
+                const uniqueDrugs = new Set(Object.values(drugDatabase));
+                uniqueDrugs.forEach(drugName => {
+                    const option = document.createElement('option');
+                    option.value = drugName;
+                    datalist.appendChild(option);
+                });
                 
                 console.log("DBロード完了:", drugDatabase);
                 statusEl.innerHTML = '<i data-lucide="database" class="w-3 h-3"></i> DB接続済';
@@ -718,6 +732,13 @@
 
         // 初期化
         window.onload = () => {
+            // ★追加：全ての薬剤入力欄にプルダウン機能(datalist)を紐付け
+            const drugInputs = document.querySelectorAll('input[id$="-drug-a"], input[id$="-drug-b"], input[id$="-drug-c"], input[id$="-drug-d"]');
+            drugInputs.forEach(input => {
+                input.setAttribute('list', 'drug-list');
+                input.setAttribute('placeholder', '選択 または スキャン');
+            });
+
             loadDatabase(); // データベース読み込みを開始
             calculate();
         };
